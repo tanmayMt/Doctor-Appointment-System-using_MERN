@@ -28,28 +28,28 @@ const registerController = async (req, res) => {
 };
 
 // login callback
-const loginController =  () => { //const loginController = async (req, res) => {
-//   try {
-//     const user = await userModel.findOne({ email: req.body.email });
-//     if (!user) {
-//       return res
-//         .status(200)
-//         .send({ message: "user not found", success: false });
-//     }
-//     const isMatch = await bcrypt.compare(req.body.password, user.password);
-//     if (!isMatch) {
-//       return res
-//         .status(200)
-//         .send({ message: "Invlid EMail or Password", success: false });
-//     }
-//     const token = jwt.sign({ id: user.__id }, process.env.JWT_SECRET, {
-//       expiresIn: "1d",
-//     });
-//     res.status(200).send({ message: "Login Success", success: true, token });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({ message: `Error in Login CTRL ${error.message}` });
-//   }
+const loginController = async (req, res) => {
+  try {
+    const user = await userModel.findOne({ email: req.body.email });
+    if (!user) {
+      return res
+        .status(200)
+        .send({ message: "user not found", success: false });
+    }
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
+      return res
+        .status(200)
+        .send({ message: "Invlid EMail or Password", success: false });
+    }
+    const token = jwt.sign({ id: user.__id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    res.status(200).send({ message: "Login Success", success: true, token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: `Error in Login CTRL ${error.message}` });
+  }
 };
 
 module.exports = { loginController, registerController };
