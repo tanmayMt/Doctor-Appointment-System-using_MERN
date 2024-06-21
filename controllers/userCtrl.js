@@ -34,15 +34,17 @@ const loginController = async (req, res) => {
     if (!user) {
       return res
         .status(200)
-        .send({ message: "user not found", success: false });
+        //.send({ message: "user not found", success: false });
+        .send({ message: "Invalid E-mail", success: false });
     }
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
       return res
         .status(200)
-        .send({ message: "Invlid EMail or Password", success: false });
+        // .send({ message: "Invlid E-mail or Password", success: false });
+        .send({ message: "Invalid Password", success: false });
     }
-    const token = jwt.sign({ id: user.__id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     res.status(200).send({ message: "Login Success", success: true, token });
@@ -52,4 +54,36 @@ const loginController = async (req, res) => {
   }
 };
 
-module.exports = { loginController, registerController };
+const authController = async (req, res) => {
+  try {
+    const user = await userModel.findOne({ _id: req.body.userId });  //findById({ _id: req.body.userId })
+    //user.password = undefined;
+    if (!user) {
+      return res.status(200).send({
+        message: "user not found",
+        success: false,
+      });
+    } else {
+      res.status(200).send({
+        success: true,
+        data: {name:user.name,email:user.email},
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "auth error",
+      success: false,
+      error,
+    });
+  }
+};
+
+
+
+module.exports = {
+  loginController,
+  registerController,
+  authController,
+
+};
