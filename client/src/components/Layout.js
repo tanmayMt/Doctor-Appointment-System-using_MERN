@@ -20,8 +20,10 @@ const Layout = ({ children }) => {
                 return (
                   <>
                     <div className={`menu-item ${isActive && "active"}`}>
+                      <Link to={menu.path}>
                       <i className={menu.icon}></i>
-                      <Link to={menu.path}>{menu.name}</Link>
+                      {menu.name}
+                      </Link>
                     </div>
                   </>
                 );
