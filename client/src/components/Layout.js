@@ -3,7 +3,9 @@ import "../styles/LayoutStyles.css";
 import { SidebarMenu } from "./../Data/data";
 
 import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 const Layout = ({ children }) => {
+  const { user } = useSelector(state => state.user); //((state) => state.user);
   const location = useLocation();
   return (
     <>
@@ -32,6 +34,10 @@ const Layout = ({ children }) => {
           </div>
           <div className="content">
             <div className="header">Header</div>
+             <div className="header-content">
+              <i class="fa-solid fa-bell"></i>
+              <Link to="/profile">{user?.name}</Link>
+             </div>
             <div className="body">{children}</div>
           </div>
         </div>
