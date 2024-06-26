@@ -7,32 +7,36 @@ import { showLoading, hideLoading } from "../redux/features/alertSlice";
 import axios from "axios";
 
 export const ApplyDoctor = () => {
+  const { user } = useSelector((state) => state.user);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   //handle form
   const handleFinish = async (values) => {
-    // try {
-    //   dispatch(showLoading());
-    //   const res = await axios.post(
-    //     "/api/v1/user/apply-doctor",
-    //     { ...values, userId: user._id },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //       },
-    //     }
-    //   );
-    //   dispatch(hideLoading());
-    //   if (res.data.success) {
-    //     message.success(res.data.success);
-    //     navigate("/");
-    //   } else {
-    //     message.error(res.data.success);
-    //   }
-    // } catch (error) {
-    //   dispatch(hideLoading());
-    //   console.log(error);
-    //   message.error("Somthing Went Wrrong ");
-    // }
     console.log(values);
+    try {
+      dispatch(showLoading());
+      const res = await axios.post(
+        "/api/v1/user/apply-doctor",
+        { ...values, userId: user._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      dispatch(hideLoading());
+      if (res.data.success) {
+        message.success(res.data.success);
+        navigate("/");
+      } else {
+        message.error(res.data.success);
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      console.log(error);
+      message.error("Somthing Went Wrrong ");
+    }
   };
   return (
     <Layout>

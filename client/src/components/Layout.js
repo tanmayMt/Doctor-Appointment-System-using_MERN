@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/LayoutStyles.css";
 import { adminMenu,userMenu } from "./../Data/data.js";
-import { message } from "antd";
+import { Badge, message } from "antd";
 import { Link, useLocation,useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 const Layout = ({ children }) => {
@@ -46,11 +46,14 @@ const Layout = ({ children }) => {
             </div>
           </div>
           <div className="content">
-            <div className="header">Header</div>
+            <div className="header">
              <div className="header-content">
-              <i class="fa-solid fa-bell"></i>
+                <Badge count={user && user.notifcation.length}>
+                  <i class="fa-solid fa-bell"></i>
+                </Badge>
               <Link to="/profile">{user?.name}</Link>
              </div>
+            </div>
             <div className="body">{children}</div>
           </div>
         </div>
