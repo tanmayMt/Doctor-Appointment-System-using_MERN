@@ -1,6 +1,7 @@
 const userModel = require("../models/userModels");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+var nodemailer = require('nodemailer');
 const doctorModel = require("../models/doctorModel");
 
 //register callback
@@ -18,6 +19,39 @@ const registerController = async (req, res) => {
     req.body.password = hashedPassword;
     const newUser = new userModel(req.body);
     await newUser.save();
+
+      //Send confirmation email
+
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.SENDER_GMAIL,
+          pass: process.env.SENDER_GMAIL_PASSCODE,
+        }
+      });
+
+      var mailOptions = {
+        from: process.env.SENDER_GMAIL,
+        to: req.body.email,
+        subject: 'Registration successful',
+        text: `Hi ${req.body.fname} ${req.body.lname},
+          Welcome to DocMate, your one-stop point to connect with doctors. We hope you a very good health.
+          
+Thanks & Regards,
+Mr. Tanmay Samanta
+Team DocMate`,  
+        // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+      //Email code
+
     res.status(201).send({ message: "Register Sucessfully", success: true });
   } catch (error) {
     console.log(error);
