@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showLoading, hideLoading } from "../redux/features/alertSlice";
 
 const BookingPage = () => {
+  const { user } = useSelector((state) => state.user);
   const params = useParams();
   const [doctors, setDoctors] = useState([]);
   const [date, setDate] = useState("");
@@ -31,6 +32,40 @@ const BookingPage = () => {
         setDoctors(res.data.data);
       }
     } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // =============== booking func
+  const handleBooking = async () => {
+    try {
+      setIsAvailable(true);
+      if (!date && !time) {
+        return alert("Date & Time Required");
+      }
+      dispatch(showLoading());
+      const res = await axios.post(
+        "/api/v1/user/book-appointment",
+        {
+          doctorId: params.doctorId,
+          userId: user._id,
+          doctorInfo: doctors,
+          userInfo: user,
+          date: date,
+          time: time,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      dispatch(hideLoading());
+      if (res.data.success) {
+        message.success(res.data.message);
+      }
+    } catch (error) {
+      dispatch(hideLoading());
       console.log(error);
     }
   };
@@ -72,7 +107,7 @@ const BookingPage = () => {
                 Check Availability
               </button>
               <button className="btn btn-dark mt-2" 
-                    //   onClick={handleBooking}
+                      onClick={handleBooking}
               >
                 Book Now
               </button>
@@ -83,5 +118,4 @@ const BookingPage = () => {
     </Layout>
   )
 }
-
 export default BookingPage

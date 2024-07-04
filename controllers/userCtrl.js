@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 var nodemailer = require('nodemailer');
 const doctorModel = require("../models/doctorModel");
+const appointmentModel = require("../models/appointmentModel");
+const moment = require("moment");
 
 //register callback
 const registerController = async (req, res) => {
@@ -213,6 +215,35 @@ const getAllDocotrsController = async (req, res) => {
   }
 };
 
+//BOOK APPOINTMENT
+const bookeAppointmnetController = async (req, res) => {
+  try {
+    req.body.date = moment(req.body.date, "DD-MM-YYYY").toISOString();
+    req.body.time = moment(req.body.time, "HH:mm").toISOString();
+    req.body.status = "pending";
+    const newAppointment = new appointmentModel(req.body);
+    await newAppointment.save();
+    const user = await userModel.findOne({ _id: req.body.doctorInfo.userId });
+    user.notifcation.push({
+      type: "New-appointment-request",
+      message: `A New Appointment Request from ${req.body.userInfo.name}`,
+      onCLickPath: "/user/appointments",
+    });
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "Appointment Book succesfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "Error While Booking Appointment",
+    });
+  }
+};
+
 module.exports = {
   loginController,
   registerController,
@@ -221,4 +252,5 @@ module.exports = {
   getAllNotificationController,
   deleteAllNotificationController,
   getAllDocotrsController,
+  bookeAppointmnetController,
 };
