@@ -81,9 +81,39 @@ const doctorAppointmentsController = async (req, res) => {
   }
 };
 
+const updateStatusController = async (req, res) => {
+  try {
+    const { appointmentsId, status } = req.body;
+    const appointments = await appointmentModel.findByIdAndUpdate(
+      appointmentsId,
+      { status }
+    );
+    const user = await userModel.findOne({ _id: appointments.userId });
+    const notifcation = user.notifcation;
+    notifcation.push({
+      type: "status-updated",
+      message: `Your Appointment has been updated ${status}`,
+      onCLickPath: "/doctor-appointments",
+    });
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "Appointment Status Updated",
+    });
+  } catch (error) {r
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "Error In Update Status",
+    });
+  }
+};
+
 module.exports = { 
   getDoctorInfoController,
   updateProfileController,
   getDoctorByIdController,
   doctorAppointmentsController,
+  updateStatusController,
 };
